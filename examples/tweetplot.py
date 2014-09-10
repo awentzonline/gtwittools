@@ -8,11 +8,12 @@ import gipc
 import matplotlib.pyplot as plt
 from gevent.queue import Queue
 from gtwittools.gutils import echo_queue, spawn_worker
-
+from gtwittools.tweetin import (
+    extract_statuses, filter_twitter, get_twitter_api)
 
 # sampler process
 
-def sampler(buffer_q, gen, interval=0.01, flush_size=100):
+def sampler(buffer_q, gen, interval=0.01, flush_size=10):
     buffer = []
     while True:
         value = next(gen)
@@ -23,9 +24,38 @@ def sampler(buffer_q, gen, interval=0.01, flush_size=100):
         gevent.sleep(interval)
 
 
-def sampler_process(buffer_writer, fn):
+counter = 0
+
+def sample_counter():
+    import time
+    global counter
+    last_t = time.time()
+    while True:
+        t = time.time()
+        dt = t - last_t
+        last_t = t
+        count = counter
+        counter = 0
+        if not dt:
+            dt = 1.0
+        yield count / dt
+
+
+def count_phrases(phrase_q, phrase):
+    global counter
+    for text in phrase_q:
+        counter += text.count(phrase)
+
+
+def sampler_process(buffer_writer, fn, phrase='lol'):
+    raw_status_q = Queue()
+    status_q = Queue()
+    twitter_api = get_twitter_api()
     spawn_worker([
-        (sampler, buffer_writer, fn),
+        (sampler, buffer_writer, fn, 5, 20),
+        (filter_twitter, twitter_api, status_q, [phrase]),
+        (extract_statuses, status_q, raw_status_q),
+        (count_phrases, raw_status_q, phrase),
     ])
 
 
@@ -100,12 +130,10 @@ def spawn_processes(confs):
 
 
 def main():
-    import math
-    sin = gen_t(math.sin, scale=5.0)
-
     buffer_reader, buffer_writer = gipc.pipe()
+
     processes = spawn_processes([
-        (sampler_process, buffer_writer, sin),
+        (sampler_process, buffer_writer, sample_counter()),
         (renderer_process, buffer_reader,),
     ])
     while True:
@@ -117,4 +145,3 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         pass
-
