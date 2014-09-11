@@ -25,11 +25,11 @@ def sampler(buffer_q, gen, interval=0.01, flush_size=10):
 
 
 counter = 0
+last_t = time.time()
 
 def sample_counter():
-    import time
-    global counter
-    last_t = time.time()
+    global counter, last_t
+    
     while True:
         t = time.time()
         dt = t - last_t
@@ -52,7 +52,7 @@ def sampler_process(buffer_writer, fn, phrase='lol'):
     status_q = Queue()
     twitter_api = get_twitter_api()
     spawn_worker([
-        (sampler, buffer_writer, fn, 5, 20),
+        (sampler, buffer_writer, fn, 2, 10),
         (filter_twitter, twitter_api, status_q, [phrase]),
         (extract_statuses, status_q, raw_status_q),
         (count_phrases, raw_status_q, phrase),
