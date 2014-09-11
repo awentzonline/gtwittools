@@ -18,6 +18,7 @@ author_email = "awentz@theonion.com"
 license = "MIT"
 requires = [
     "gevent>=1.0",
+    "gipc",
     "python-twitter",
     "PyTumblr"
 ]

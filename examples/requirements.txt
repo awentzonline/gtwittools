@@ -1,4 +1,3 @@
 gevent>=1.0
 python-twitter
 PyTumblr
-gipc

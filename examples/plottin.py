@@ -7,7 +7,7 @@ import gevent
 import gipc
 import matplotlib.pyplot as plt
 from gevent.queue import Queue
-from gtwittools.gutils import echo_queue, spawn_worker
+from gtwittools.gutils import echo_queue, spawn_worker, spawn_processes
 
 
 # sampler process
@@ -89,14 +89,6 @@ def gen_t(f, scale=1.0, initial_t=0.0):
         t += scale * (last_t - now)
         last_t = now
         yield f(t)
-
-
-def spawn_processes(confs):
-    processes = []
-    for conf in confs:
-        p = gipc.start_process(target=conf[0], args=tuple(conf[1:]))
-        processes.append(p)
-    return processes
 
 
 def main():

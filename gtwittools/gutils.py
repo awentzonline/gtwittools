@@ -1,4 +1,5 @@
 import gevent
+import gipc
 from gevent.pool import Group
 
 
@@ -23,3 +24,12 @@ def spawn_worker(conf):
             gevent.sleep(1)
     except KeyboardInterrupt:
         pass
+
+
+def spawn_processes(confs):
+    """Spawn subprocesses with a config similar to spawn_worker."""
+    processes = []
+    for conf in confs:
+        p = gipc.start_process(target=conf[0], args=tuple(conf[1:]))
+        processes.append(p)
+    return processes
