@@ -7,25 +7,14 @@ import gevent
 import gipc
 import matplotlib.pyplot as plt
 from gevent.queue import Queue
-from gtwittools.gutils import echo_queue, spawn_worker, spawn_processes
+from gtwittools.gutils import echo_queue, sampler, spawn_worker, spawn_processes
 
 
 # sampler process
 
-def sampler(buffer_q, gen, interval=0.01, flush_size=100):
-    buffer = []
-    while True:
-        value = next(gen)
-        buffer.append(value)
-        if len(buffer) == flush_size:
-            buffer_q.put(buffer)
-            buffer = []
-        gevent.sleep(interval)
-
-
 def sampler_process(buffer_writer, fn):
     spawn_worker([
-        (sampler, buffer_writer, fn),
+        (sampler, buffer_writer, fn, 0.1, 5.0),
     ])
 
 

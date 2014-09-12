@@ -1,3 +1,5 @@
+import time
+
 import gevent
 import gipc
 from gevent.pool import Group
@@ -12,6 +14,21 @@ def fanout(in_q, out_qs):
 def echo_queue(q):
     for item in q:
         print item
+
+
+def sampler(buffer_q, gen, interval=0.1, flush_interval=10.0):
+    """Periodically poll an iterable and occasionally flush the samples."""
+    buffer = []
+    last_flush = time.time()
+    while True:
+        value = next(gen)
+        buffer.append(value)
+        now = time.time()
+        if (now - last_flush >= flush_interval):
+            buffer_q.put(buffer)
+            buffer = []
+            last_flush = now
+        gevent.sleep(interval)
 
 
 def spawn_worker(conf):

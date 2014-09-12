@@ -10,20 +10,10 @@ from gevent.queue import Queue
 from gtwittools.gutils import (
     echo_queue, spawn_worker, spawn_processes)
 from gtwittools.tweetin import (
-    extract_statuses, filter_twitter, get_twitter_api)
+    extract_statuses, filter_twitter, get_twitter_api, sampler)
+
 
 # sampler process
-
-def sampler(buffer_q, gen, interval=0.01, flush_size=10):
-    buffer = []
-    while True:
-        value = next(gen)
-        buffer.append(value)
-        if len(buffer) == flush_size:
-            buffer_q.put(buffer)
-            buffer = []
-        gevent.sleep(interval)
-
 
 counter = 0
 last_t = time.time()
@@ -53,7 +43,7 @@ def sampler_process(buffer_writer, fn, phrase='lol'):
     status_q = Queue()
     twitter_api = get_twitter_api()
     spawn_worker([
-        (sampler, buffer_writer, fn, 2, 10),
+        (sampler, buffer_writer, fn, 2.0, 10.0),
         (filter_twitter, twitter_api, status_q, [phrase]),
         (extract_statuses, status_q, raw_status_q),
         (count_phrases, raw_status_q, phrase),
