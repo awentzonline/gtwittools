@@ -45,7 +45,7 @@ def spawn_greenlets(conf):
 
 
 def spawn_processes(confs):
-    """Spawn subprocesses with a config similar to spawn_worker."""
+    """Spawn subprocesses with a config similar to spawn_greenlets."""
     processes = []
     for conf in confs:
         p = gipc.start_process(target=conf[0], args=tuple(conf[1:]))
