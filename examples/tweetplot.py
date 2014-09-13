@@ -98,20 +98,6 @@ def renderer_process(buffer_reader, output_dir='/tmp/'):
     ])
 
 
-# utils
-
-def gen_t(f, scale=1.0, initial_t=0.0):
-    t = initial_t
-    last_t = None
-    while True:
-        if last_t is None:
-            last_t = time.time()
-        now = time.time()
-        t += scale * (last_t - now)
-        last_t = now
-        yield f(t)
-
-
 def main():
     buffer_reader, buffer_writer = gipc.pipe()
 

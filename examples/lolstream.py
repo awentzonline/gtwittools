@@ -5,7 +5,8 @@ import gevent
 from gevent.queue import Queue
 
 from gtwittools.gutils import spawn_greenlets
-from gtwittools.tweetin import echo_statuses, filter_twitter, get_twitter_api
+from gtwittools.tweetin import (
+    echo_statuses, filter_twitter, get_twitter_api)
 
 
 def main():

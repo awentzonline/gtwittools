@@ -7,7 +7,8 @@ import gevent
 import gipc
 import matplotlib.pyplot as plt
 from gevent.queue import Queue
-from gtwittools.gutils import echo_queue, sampler, spawn_greenlets, spawn_processes
+from gtwittools.gutils import (
+    echo_queue, gen_t, sampler, spawn_greenlets, spawn_processes)
 
 
 # sampler process
@@ -64,20 +65,6 @@ def renderer_process(buffer_reader, output_dir='/tmp/'):
         (plotter, plot_q, rendered_q, output_dir),
         (echo_queue, rendered_q),
     ])
-
-
-# utils
-
-def gen_t(f, scale=1.0, initial_t=0.0):
-    t = initial_t
-    last_t = None
-    while True:
-        if last_t is None:
-            last_t = time.time()
-        now = time.time()
-        t += scale * (last_t - now)
-        last_t = now
-        yield f(t)
 
 
 def main():
