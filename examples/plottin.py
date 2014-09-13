@@ -7,13 +7,13 @@ import gevent
 import gipc
 import matplotlib.pyplot as plt
 from gevent.queue import Queue
-from gtwittools.gutils import echo_queue, sampler, spawn_worker, spawn_processes
+from gtwittools.gutils import echo_queue, sampler, spawn_greenlets, spawn_processes
 
 
 # sampler process
 
 def sampler_process(buffer_writer, fn):
-    spawn_worker([
+    spawn_greenlets([
         (sampler, buffer_writer, fn, 0.1, 5.0),
     ])
 
@@ -59,7 +59,7 @@ def configure_plots(buffer_reader, plot_q):
 def renderer_process(buffer_reader, output_dir='/tmp/'):
     plot_q = Queue()
     rendered_q = Queue()
-    spawn_worker([
+    spawn_greenlets([
         (configure_plots, buffer_reader, plot_q),
         (plotter, plot_q, rendered_q, output_dir),
         (echo_queue, rendered_q),

@@ -8,9 +8,9 @@ import gipc
 import matplotlib.pyplot as plt
 from gevent.queue import Queue
 from gtwittools.gutils import (
-    echo_queue, spawn_worker, spawn_processes)
+    echo_queue, sampler, spawn_greenlets, spawn_processes)
 from gtwittools.tweetin import (
-    extract_statuses, filter_twitter, get_twitter_api, sampler)
+    extract_statuses, filter_twitter, get_twitter_api)
 
 
 # sampler process
@@ -42,7 +42,7 @@ def sampler_process(buffer_writer, fn, phrase='lol'):
     raw_status_q = Queue()
     status_q = Queue()
     twitter_api = get_twitter_api()
-    spawn_worker([
+    spawn_greenlets([
         (sampler, buffer_writer, fn, 2.0, 10.0),
         (filter_twitter, twitter_api, status_q, [phrase]),
         (extract_statuses, status_q, raw_status_q),
@@ -91,7 +91,7 @@ def configure_plots(buffer_reader, plot_q):
 def renderer_process(buffer_reader, output_dir='/tmp/'):
     plot_q = Queue()
     rendered_q = Queue()
-    spawn_worker([
+    spawn_greenlets([
         (configure_plots, buffer_reader, plot_q),
         (plotter, plot_q, rendered_q, output_dir),
         (echo_queue, rendered_q),

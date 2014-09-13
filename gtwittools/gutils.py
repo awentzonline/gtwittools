@@ -31,7 +31,7 @@ def sampler(buffer_q, gen, interval=0.1, flush_interval=10.0):
         gevent.sleep(interval)
 
 
-def spawn_worker(conf):
+def spawn_greenlets(conf):
     """Some sugar to wrap up all of your greenlets."""
     group = Group()
     for args in conf:
