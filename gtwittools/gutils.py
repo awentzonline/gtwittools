@@ -1,3 +1,4 @@
+import sys
 import time
 
 import gevent
@@ -50,3 +51,16 @@ def spawn_processes(confs):
         p = gipc.start_process(target=conf[0], args=tuple(conf[1:]))
         processes.append(p)
     return processes
+
+
+def never_surrender(fn):
+    """Re-invoke a function if it dies from an exception."""
+    def wrapped(*args, **kwargs):
+        while True:
+            try:
+                fn(*args, **kwargs)
+            except KeyboardInterrupt:
+                break
+            except:
+                print('Error:{}'.format(sys.exc_info()[0]))
+    return wrapped
