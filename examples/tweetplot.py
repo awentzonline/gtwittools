@@ -73,7 +73,7 @@ def render_plot(plot_conf, filename='/tmp/test.png'):
     plt.clf()
     values = plot_conf.pop('values')
     plt.plot(values)
-    for key, value in plot_conf:
+    for key, value in plot_conf.items():
         getattr(plt, key)(value)  # it's a bunch of callables?
     plt.savefig(filename)
 
