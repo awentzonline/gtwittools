@@ -30,17 +30,12 @@ def pipe_to_q(pipe, q):
 
 def twitter_process(url_writer, filter_phrases=[]):
     url_q = Queue()
-    status_q = Queue()
-    status_q2 = Queue()
     image_status_q = Queue()
     twitter_api = get_twitter_api()
     spawn_greenlets([
         (filter_twitter, twitter_api, image_status_q, filter_phrases),
         (extract_status_images, image_status_q, url_q),
         (q_to_pipe, url_q, url_writer)
-        #(echo_queue, url_q),
-        #(fanout, status_q, [status_q2, image_status_q]),
-        #(echo_statuses, image_status_q),
     ])
 
 
