@@ -12,7 +12,7 @@ face_classifier = cv2.CascadeClassifier(
 
 def detect_in_files(fn, filename_q, classifiers={}):
     for filename in filename_q:
-        img = cv2.imread(filename)
+        img = cv2.imread(filename, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         features = {}
         for name, classifier in classifiers.items():
             rects = classifier.detectMultiScale(img)
